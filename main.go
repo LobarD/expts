@@ -1,22 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
+
+type ErrNegativeSqrt float64
 
 func main() {
-	s := make([]int, 2)
-	s[0] = 0
-	s[1] = 1
-	printSlice(s) // len=2 cap=2 [0 1]
-
-	//если мы добавляем сверх емкости текущего слайса, элементов меньше удвоенной емкости(cap), то cap увеличится в 2 раза
-	s = append(s, 3, 4) //len=4 cap=4 [0 1 3 4]
-	printSlice(s)
-	//при заполнении слайса на количество элементов более чем удвоенная емкость(cap), то cap увеличивается в 2 раза + блоками по 2
-	s = append(s, 5, 6, 7, 8, 9) //len=9 cap=10 [0 1 3 4 5 6 7 8 9]
-	printSlice(s)
-
+	fmt.Println(Sqrt(2))
+	fmt.Println(Sqrt(-2))
 }
 
-func printSlice(s []int) {
-	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
+func (e ErrNegativeSqrt) Error() string {
+	return fmt.Sprintf("cannot Sqrt negative number: %v", float64(e))
+}
+
+func Sqrt(x float64) (float64, error) {
+	z := 1.0
+	if x >= 0 {
+		for i := 0; i < 10; i++ {
+			z -= (z*z - x) / (2 * z)
+			//fmt.Println(z)
+		}
+	} else {
+		return 0, ErrNegativeSqrt(x)
+	}
+	return z, nil
 }
